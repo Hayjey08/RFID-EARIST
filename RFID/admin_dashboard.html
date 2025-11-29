@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --primary-dark: #0056b3;
+            --secondary-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-dark: #343a40;
+            --text-light: #6c757d;
+            --shadow-light: 0 4px 10px rgba(0,0,0,0.05);
+            --shadow-hover: 0 8px 25px rgba(0,0,0,0.15);
+            --font-stack: 'Inter', sans-serif;
+
+            --bg-student: #e0f7fa;
+            --bg-professor: #f3e5f5;
+            --accent-student: #00acc1;
+            --accent-professor: #8e24aa;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-stack);
+            background-color: var(--secondary-color);
+            min-height: 100vh;
+            padding-top: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: var(--card-bg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 5%;
+            box-shadow: var(--shadow-light);
+            z-index: 1000;
+        }
+
+        .navbar .logo { font-size: 1.8rem; font-weight: 700; color: var(--primary-dark); text-decoration: none; }
+        .navbar .user-profile-icon { width: 45px; height: 45px; border-radius: 50%; background: var(--primary-color); display: flex; justify-content: center; align-items: center; font-weight: 700; color: #fff; font-size: 1.1rem; }
+
+        .choice-container {
+            display: flex;
+            gap: 50px;
+            width: 90%;
+            max-width: 1200px;
+        }
+
+        .choice-box {
+            flex: 1;
+            padding: 80px 40px;
+            border-radius: 25px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .choice-box:hover { transform: translateY(-10px); box-shadow: var(--shadow-hover); }
+
+        .student-box { background-color: var(--bg-student); border: 5px solid var(--accent-student); }
+        .professor-box { background-color: var(--bg-professor); border: 5px solid var(--accent-professor); }
+
+        .choice-box h2 { font-size: 3rem; font-weight: 800; margin-bottom: 20px; color: var(--text-dark); }
+        .choice-box p { font-size: 1.2rem; color: var(--text-dark); }
+
+        @media (max-width: 900px) {
+            .choice-container { flex-direction: column; gap: 30px; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a class="logo">Admin Hub</a>
+        <div class="user-profile-icon">AD</div>
+    </nav>
+
+    <div class="choice-container">
+        <div class="choice-box student-box" onclick="window.location.href='student-enrollment.html'">
+            <h2>Enroll Student</h2>
+            <p>Register a new student in the system.</p>
+        </div>
+        <div class="choice-box professor-box" onclick="window.location.href='professor-enrollment.html'">
+            <h2>Enroll Professor</h2>
+            <p>Register a new professor in the system.</p>
+        </div>
+    </div>
+
+</body>
+</html>

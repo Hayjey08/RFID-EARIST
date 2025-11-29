@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professor Enrollment System</title>
+    <style>
+        /* Base styles and variables */
+        :root {
+            --primary-color: #007bff;
+            --primary-dark: #0056b3;
+            --secondary-color: #f8f9fa; /* Global background */
+            --card-bg: #ffffff;
+            --text-dark: #343a40;
+            --text-light: #6c757d;
+            --shadow-light: 0 4px 10px rgba(0, 0, 0, 0.05);
+            --shadow-hover: 0 8px 15px rgba(0, 0, 0, 0.1);
+            --font-stack: 'Inter', sans-serif;
+
+            /* SPECIFIC YEAR BACKGROUND COLORS (Pastel tones) */
+            --bg-year-1: #e0f7fa; /* Cyan tint */
+            --bg-year-2: #e8f5e9; /* Green tint */
+            --bg-year-3: #fff3e0; /* Orange tint */
+            --bg-year-4: #f3e5f5; /* Purple tint */
+            
+            /* YEAR ACCENT COLORS (For borders/headings) */
+            --accent-year-1: #00acc1;
+            --accent-year-2: #43a047;
+            --accent-year-3: #fb8c00;
+            --accent-year-4: #8e24aa;
+            
+            --success-color: #06d6a0;
+            --success-light: #d1fae5;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-stack);
+            background-color: var(--secondary-color);
+            min-height: 100vh;
+            padding-top: 70px; 
+        }
+
+        /* ---------------------------------- */
+        /* Navbar Styles */
+        /* ---------------------------------- */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: var(--card-bg);
+            box-shadow: var(--shadow-light);
+            display: flex;
+            padding: 10px 5%;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .navbar .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            text-decoration: none;
+        }
+
+        .navbar .sort-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .navbar input[type="text"],
+        .navbar select {
+            font-size: 0.9rem;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid #ced4da;
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            color: var(--text-dark);
+            min-width: 120px;
+        }
+
+        .navbar input[type="text"]:focus,
+        .navbar select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+        }
+
+        .navbar .user-profile-icon {
+            width: 40px;
+            height: 40px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            box-shadow: var(--shadow-light);
+        }
+
+        /* ---------------------------------- */
+        /* Main Content Styles */
+        /* ---------------------------------- */
+        main {
+            padding: 20px 5%;
+            display: flex;
+            flex-direction: column;
+            gap: 30px; 
+        }
+        
+        /* Styles for the Year Containers */
+        .year-group {
+            padding: 25px;
+            border-radius: 16px;
+            background-color: white; 
+            box-shadow: var(--shadow-light);
+            transition: all 0.3s ease;
+        }
+        
+        .year-group h2 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            border-bottom: 2px solid rgba(0,0,0,0.1);
+            padding-bottom: 10px;
+            display: inline-block;
+            width: 100%;
+        }
+
+        /* Specific Theme Colors for each Year */
+        .year-1-theme { background-color: var(--bg-year-1); }
+        .year-1-theme h2 { color: var(--accent-year-1); border-color: var(--accent-year-1); }
+
+        .year-2-theme { background-color: var(--bg-year-2); }
+        .year-2-theme h2 { color: var(--accent-year-2); border-color: var(--accent-year-2); }
+
+        .year-3-theme { background-color: var(--bg-year-3); }
+        .year-3-theme h2 { color: var(--accent-year-3); border-color: var(--accent-year-3); }
+
+        .year-4-theme { background-color: var(--bg-year-4); }
+        .year-4-theme h2 { color: var(--accent-year-4); border-color: var(--accent-year-4); }
+
+        /* Grid Layout */
+        .subject-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        /* Card Styles */
+        .subject-card {
+            background-color: var(--card-bg); 
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border-left: 5px solid; 
+            position: relative;
+        }
+        
+        /* Use the parent theme color for the card border */
+        .year-1-theme .subject-card { border-left-color: var(--accent-year-1); }
+        .year-2-theme .subject-card { border-left-color: var(--accent-year-2); }
+        .year-3-theme .subject-card { border-left-color: var(--accent-year-3); }
+        .year-4-theme .subject-card { border-left-color: var(--accent-year-4); }
+
+        .subject-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .subject-card.selected {
+            background-color: #e3f2fd;
+        }
+
+        .subject-card h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 5px;
+        }
+
+        .subject-card .metadata span {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-light);
+            line-height: 1.4;
+        }
+
+        .subject-card .meta-highlight {
+            font-weight: 600;
+            color: var(--text-dark); 
+            margin-top: 5px;
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        .subject-card .checkbox {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 20px;
+            height: 20px;
+            accent-color: var(--primary-color);
+        }
+
+        /* Professor Form Styles */
+        .professor-form {
+            background-color: var(--card-bg);
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: var(--shadow-light);
+            margin-bottom: 30px;
+        }
+
+        .form-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            border-bottom: 2px solid rgba(0,0,0,0.1);
+            padding-bottom: 10px;
+            color: var(--primary-dark);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-dark);
+        }
+
+        .form-group input, .form-group select {
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid #ced4da;
+            font-size: 16px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+        }
+
+        .btn-enroll {
+            padding: 14px 24px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: var(--shadow-light);
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .btn-enroll:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-enroll:active {
+            transform: translateY(0);
+        }
+
+        #success-message {
+            padding: 16px 20px;
+            border-radius: 10px;
+            background: var(--success-light);
+            color: #065f46;
+            font-weight: 600;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .validation-message {
+            padding: 12px 16px;
+            border-radius: 8px;
+            background: #ffeaa7;
+            color: #e17055;
+            font-weight: 500;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        /* Feedback Styles */
+        .feedback {
+            text-align: center;
+            padding: 50px 20px;
+            color: var(--text-light);
+            font-size: 1.1rem;
+            font-style: italic;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                padding: 10px 5%;
+                gap: 10px;
+            }
+            .navbar .sort-controls {
+                flex-direction: row;
+                gap: 10px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .navbar input[type="text"], .navbar select {
+                flex-grow: 1;
+                max-width: 48%;
+            }
+            .subject-grid {
+                grid-template-columns: 1fr;
+            }
+            main {
+                padding: 15px 5%;
+            }
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="#" class="logo">Professor Enrollment</a>
+        <div class="sort-controls">
+            <input type="text" id="searchInput" placeholder="Search subject...">
+            <select id="programFilter">
+                <option value="">All Programs</option>
+                <option value="BSIT">BSIT</option>
+                <option value="BSCS">BSCS</option>
+                <option value="BSIS">BSIS</option>
+                <option value="BSCpE">BSCpE</option>
+            </select>
+            <select id="sectionFilter">
+                <option value="">All Sections</option>
+                <option value="A">Section A</option>
+                <option value="B">Section B</option>
+                <option value="C">Section C</option>
+            </select>
+        </div>
+        <div class="user-profile-icon">
+            JD
+        </div>
+    </nav>
+
+    <main>
+        <div class="professor-form">
+            <h2 class="form-title">Professor Information</h2>
+            
+            <div class="validation-message" id="validation-message">
+                <span id="validation-text">Please complete all required fields</span>
+            </div>
+            
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="professor-name">Full Name</label>
+                    <input type="text" id="professor-name" placeholder="Enter professor's full name">
+                </div>
+                <div class="form-group">
+                    <label for="professor-id">Professor ID</label>
+                    <input type="text" id="professor-id" placeholder="Enter professor ID">
+                </div>
+                <div class="form-group">
+                    <label for="program">Department/Program</label>
+                    <select id="program">
+                        <option value="">Select Department</option>
+                        <option value="BSIT">BS Information Technology</option>
+                        <option value="BSCS">BS Computer Science</option>
+                        <option value="BSIS">BS Information Systems</option>
+                        <option value="BSCpE">BS Computer Engineering</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" placeholder="Enter email address">
+                </div>
+            </div>
+            
+            <button class="btn-enroll" id="enroll-btn">
+                Enroll Professor
+            </button>
+            
+            <div id="success-message">
+                ✅ Professor enrolled successfully!
+            </div>
+        </div>
+        
+        <div class="year-group year-1-theme">
+            <h2>1st Year</h2>
+            <div id="year1Grid" class="subject-grid">
+                <div class="subject-card" data-year="1" data-program="BSCS" data-section="C" data-name="Object-Oriented Programming">
+                    <input type="checkbox" class="checkbox">
+                    <h3>Object-Oriented Programming</h3>
+                    <div class="metadata">
+                        <span>BSCS - Section C</span>
+                        <span class="meta-highlight">College of Computing</span>
+                    </div>
+                </div>
+                <div class="subject-card" data-year="1" data-program="BSCS" data-section="B" data-name="Discrete Mathematics">
+                    <input type="checkbox" class="checkbox">
+                    <h3>Discrete Mathematics</h3>
+                    <div class="metadata">
+                        <span>BSCS - Section B</span>
+                        <span class="meta-highlight">College of Science</span>
+                    </div>
+                </div>
+                <div class="subject-card" data-year="1" data-program="BSIT" data-section="A" data-name="Introduction to Computing">
+                    <input type="checkbox" class="checkbox">
+                    <h3>Introduction to Computing</h3>
+                    <div class="metadata">
+                        <span>BSIT - Section A</span>
+                        <span class="meta-highlight">College of Computing</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="year-group year-2-theme">
+            <h2>2nd Year</h2>
+            <div id="year2Grid" class="subject-grid">
+                <div class="subject-card" data-year="2" data-program="BSIT" data-section="B" data-name="Data Structures & Algorithms">
+                    <input type="checkbox" class="checkbox">
+                    <h3>Data Structures & Algorithms</h3>
+                    <div class="metadata">
+                        <span>BSIT - Section B</span>
+                        <span class="meta-highlight">College of Engineering</span>
+                    </div>
+                </div>
+                <div class="subject-card" data-year="2" data-program="BSCS" data-section="A" data-name="Web Development">
+                    <input type="checkbox" class="checkbox">
+                    <h3>Web Development</h3>
+                    <div class="metadata">
+                        <span>BSCS - Section A</span>
+                        <span class="meta-highlight">College of Computing</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="year-group year-3-theme">
+            <h2>3rd Year</h2>
+            <div id="year3Grid" class="subject-grid">
+                <div class="subject-card" data-year="3" data-program="BSCS" data-section="A" data-name="Web Development Fundamentals">
+                    <input type="checkbox" class="checkbox">
+                    <h3>Web Development Fundamentals</h3>
+                    <div class="metadata">
+                        <span>BSCS - Section A</span>
+                        <span class="meta-highlight">College of Computing</span>
+                    </div>
+                </div>
+                <div class="subject-card" data-year="3" data-program="BSCS" data-section="A" data-name="Advanced Web Frameworks">
+                    <input type="checkbox" class="checkbox">
+                    <h3>Advanced Web Frameworks</h3>
+                    <div class="metadata">
+                        <span>BSCS - Section A</span>
+                        <span class="meta-highlight">College of Computing</span>
+                    </div>
+                </div>
+                <div class="subject-card" data-year="3" data-program="BSIT" data-section="C" data-name="Operating Systems Concepts">
+                    <input type="checkbox" class="checkbox">
+                    <h3>Operating Systems Concepts</h3>
+                    <div class="metadata">
+                        <span>BSIT - Section C</span>
+                        <span class="meta-highlight">College of Engineering</span>
+                    </div>
+                </div>
+                <div class="subject-card" data-year="3" data-program="BSIS" data-section="B" data-name="Database Management">
+                    <input type="checkbox" class="checkbox">
+                    <h3>Database Management</h3>
+                    <div class="metadata">
+                        <span>BSIS - Section B</span>
+                        <span class="meta-highlight">College of Computing</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="year-group year-4-theme">
+            <h2>4th Year</h2>
+            <div id="year4Grid" class="subject-grid">
+                <div class="subject-card" data-year="4" data-program="BSIT" data-section="A" data-name="Database Management Systems">
+                    <input type="checkbox" class="checkbox">
+                    <h3>Database Management Systems</h3>
+                    <div class="metadata">
+                        <span>BSIT - Section A</span>
+                        <span class="meta-highlight">College of Computing</span>
+                    </div>
+                </div>
+                <div class="subject-card" data-year="4" data-program="BSIT" data-section="B" data-name="NoSQL Databases">
+                    <input type="checkbox" class="checkbox">
+                    <h3>NoSQL Databases</h3>
+                    <div class="metadata">
+                        <span>BSIT - Section B</span>
+                        <span class="meta-highlight">College of Computing</span>
+                    </div>
+                </div>
+                <div class="subject-card" data-year="4" data-program="BSCS" data-section="A" data-name="Artificial Intelligence">
+                    <input type="checkbox" class="checkbox">
+                    <h3>Artificial Intelligence</h3>
+                    <div class="metadata">
+                        <span>BSCS - Section A</span>
+                        <span class="meta-highlight">College of Computing</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        // Element references
+        const navbar = document.querySelector('.navbar');
+        const searchInput = document.getElementById('searchInput');
+        const programFilter = document.getElementById('programFilter');
+        const sectionFilter = document.getElementById('sectionFilter');
+        const enrollBtn = document.getElementById('enroll-btn');
+        const validationMessage = document.getElementById('validation-message');
+        const validationText = document.getElementById('validation-text');
+        const successMessage = document.getElementById('success-message');
+        
+        // Subject selection functionality
+        document.querySelectorAll('.subject-card').forEach(card => {
+            const checkbox = card.querySelector('.checkbox');
+            
+            card.addEventListener('click', (e) => {
+                if (e.target !== checkbox) {
+                    checkbox.checked = !checkbox.checked;
+                }
+                card.classList.toggle('selected', checkbox.checked);
+            });
+            
+            checkbox.addEventListener('change', () => {
+                card.classList.toggle('selected', checkbox.checked);
+            });
+        });
+        
+        // Filter subjects based on search and filters
+        function filterSubjects() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const programFilterValue = programFilter.value;
+            const sectionFilterValue = sectionFilter.value;
+            
+            document.querySelectorAll('.subject-card').forEach(card => {
+                const name = card.dataset.name.toLowerCase();
+                const program = card.dataset.program;
+                const section = card.dataset.section;
+                
+                const matchesSearch = name.includes(searchTerm);
+                const matchesProgram = !programFilterValue || program === programFilterValue;
+                const matchesSection = !sectionFilterValue || section === sectionFilterValue;
+                
+                if (matchesSearch && matchesProgram && matchesSection) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+        
+        // Form validation function
+        function validateForm() {
+            const name = document.getElementById('professor-name').value.trim();
+            const id = document.getElementById('professor-id').value.trim();
+            const program = document.getElementById('program').value;
+            const email = document.getElementById('email').value.trim();
+            
+            // Check if at least one subject is selected
+            const selectedSubjects = document.querySelectorAll('.subject-card input[type="checkbox"]:checked');
+            
+            let isValid = true;
+            let errorMessage = '';
+            
+            if (!name) {
+                isValid = false;
+                errorMessage = 'Professor name is required';
+            } else if (!id) {
+                isValid = false;
+                errorMessage = 'Professor ID is required';
+            } else if (!program) {
+                isValid = false;
+                errorMessage = 'Please select a department/program';
+            } else if (!email) {
+                isValid = false;
+                errorMessage = 'Email address is required';
+            } else if (selectedSubjects.length === 0) {
+                isValid = false;
+                errorMessage = 'Please select at least one subject';
+            }
+            
+            // Show validation message if needed
+            if (!isValid) {
+                validationText.textContent = errorMessage;
+                validationMessage.style.display = 'flex';
+            } else {
+                validationMessage.style.display = 'none';
+            }
+            
+            return isValid;
+        }
+        
+        // Function to send data to database (simulated)
+        function sendToDatabase(data) {
+            // In a real application, this would be an API call to your backend
+            console.log("Sending data to database:", data);
+            
+            // Simulate API call delay
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    console.log("Data successfully saved to database");
+                    resolve({ success: true, message: "Professor enrolled successfully" });
+                }, 1500);
+            });
+        }
+        
+        // Enrollment functionality
+        enrollBtn.addEventListener('click', async function() {
+            if (!validateForm()) {
+                return;
+            }
+            
+            const name = document.getElementById('professor-name').value;
+            const id = document.getElementById('professor-id').value;
+            const program = document.getElementById('program').value;
+            const email = document.getElementById('email').value;
+            
+            // Get selected subjects
+            const selectedSubjects = [];
+            document.querySelectorAll('.subject-card input[type="checkbox"]:checked').forEach(checkbox => {
+                const card = checkbox.closest('.subject-card');
+                selectedSubjects.push({
+                    name: card.dataset.name,
+                    program: card.dataset.program,
+                    year: card.dataset.year,
+                    section: card.dataset.section
+                });
+            });
+            
+            // Prepare data for database
+            const enrollmentData = {
+                professorName: name,
+                professorId: id,
+                program: program,
+                email: email,
+                subjects: selectedSubjects
+            };
+            
+            // Disable button and show loading state
+            enrollBtn.disabled = true;
+            enrollBtn.textContent = 'Saving to Database...';
+            
+            try {
+                // Send data to database
+                const result = await sendToDatabase(enrollmentData);
+                
+                if (result.success) {
+                    // Show success message
+                    successMessage.style.display = 'flex';
+                    
+                    // Reset form after successful enrollment
+                    setTimeout(() => {
+                        successMessage.style.display = 'none';
+                        document.getElementById('professor-name').value = '';
+                        document.getElementById('professor-id').value = '';
+                        document.getElementById('program').value = '';
+                        document.getElementById('email').value = '';
+                        
+                        // Clear selected subjects
+                        document.querySelectorAll('.subject-card input[type="checkbox"]').forEach(checkbox => {
+                            checkbox.checked = false;
+                            checkbox.closest('.subject-card').classList.remove('selected');
+                        });
+                        
+                        // Reset button
+                        enrollBtn.disabled = false;
+                        enrollBtn.textContent = 'Enroll Professor';
+                    }, 3000);
+                }
+            } catch (error) {
+                console.error("Error saving to database:", error);
+                alert("There was an error saving the data. Please try again.");
+                
+                // Reset button
+                enrollBtn.disabled = false;
+                enrollBtn.textContent = 'Enroll Professor';
+            }
+        });
+        
+        // Event listeners for filtering
+        searchInput.addEventListener('input', filterSubjects);
+        programFilter.addEventListener('change', filterSubjects);
+        sectionFilter.addEventListener('change', filterSubjects);
+        
+        // Validate form on input changes
+        document.getElementById('professor-name').addEventListener('input', validateForm);
+        document.getElementById('professor-id').addEventListener('input', validateForm);
+        document.getElementById('program').addEventListener('change', validateForm);
+        document.getElementById('email').addEventListener('input', validateForm);
+        
+        /**
+         * Adjusts the body padding to account for the fixed navbar height.
+         */
+        function adjustBodyPadding() {
+             const navbarHeight = navbar ? navbar.offsetHeight : 0;
+             document.body.style.paddingTop = `${navbarHeight + 20}px`;
+        }
+
+        // Initialization: Adjust layout only.
+        window.onload = () => {
+            adjustBodyPadding();
+        };
+        window.addEventListener('resize', adjustBodyPadding);
+    </script>
+</body>
+</html>
